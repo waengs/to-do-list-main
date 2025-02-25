@@ -8,83 +8,90 @@ import { EditTodoForm } from './EditToDoForm.jsx';
 uuidv4();
 
 export const TodoWrapper = () => {
-    const [toDos, setToDos] = useState([])
+    const [toDos, setToDos] = useState([]);
     const [showCompleted, setShowCompleted] = useState(false);
     const navigate = useNavigate();
 
-    const addToDo = toDo => {
+    // Function to add a new todo
+    const addToDo = (toDo) => {
         setToDos([...toDos, {
             id: uuidv4(),
             task: toDo,
             completed: false,
             isEditing: false
         }]);
+    };
 
-        console.log(toDos);
-    }
+    // Function to toggle completion status
+    const toggleComplete = (id) => {
+        setToDos(toDos.map(todo => 
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ));
+    };
 
-    const toggleComplete = id => {
-        setToDos(toDos.map(todo => todo.id === id ? {...
-        todo, completed: !todo.completed} : todo ))
-    }
+    // Function to delete a todo
+    const deleteToDo = (id) => {
+        setToDos(toDos.filter(todo => todo.id !== id));
+    };
 
-    const deleteToDo = id => {
-        setToDos(toDos.filter(todo => todo.id !== id))
-    }
+    // Function to toggle edit mode
+    const editToDo = (id) => {
+        setToDos(toDos.map(todo => 
+            todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+        ));
+    };
 
-    const editToDo = id => {
-        setToDos(toDos.map((todo) => todo.id === id ? {...
-            todo, isEditing: !todo.isEditing} : todo));
-    }
+    // Function to update the task text
+    const editTask = (newTask, id) => {
+        setToDos(toDos.map(todo => 
+            todo.id === id ? { ...todo, task: newTask, isEditing: false } : todo
+        ));
+    };
 
-    const editTask = id => {
-        setToDos(toDos.map(todo => todo.id === id ? {...
-            todo, task, isEditing: !todo.isEditing} : todo));
-    }
-
+    // Function to toggle the completed filter
     const toggleCompletedFilter = () => {
         setShowCompleted(!showCompleted);
     };
 
-    const filteredTasks = showCompleted
-        ? toDos.filter((todo) => todo.completed)
-        : toDos;
+    // Filter tasks based on completion status
+    const filteredTasks = showCompleted ? toDos.filter(todo => todo.completed) : toDos;
 
-    const handleToggle = (todoId) => {
-        setToDos((prevToDos) =>
-            prevToDos.map((todo) =>
-                todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
-            )
-        );
-    };
-
+    // Function to navigate to profile
     const showProfile = () => {
-        navigate('/profile')
-    }
+        navigate('/profile');
+    };
 
     return (
         <div className="TodoWrapper">
-            <button onClick={toggleCompletedFilter}>
-                {showCompleted ? 'Show All' : 'Show Completed'}
-            </button>
-
-            <TodoForm addToDo={addToDo} />
-            {filteredTasks.map((todo) => (
-                todo.isEditing ? (
-                    <EditTodoForm
-                        editToDo={editTask}
-                        task={todo}
-                    />
-                ) : (
-                    <Todo
-                        task={todo}
-                        toggleComplete={toggleComplete}
-                        deleteToDo={deleteToDo}
-                        editToDo={editToDo}
-                        onToggle={handleToggle}
-                    />
-                )
-            ))}
+            <h1>To-Do List</h1>
+    
+            {/* New wrapper for spacing */}
+            <div className="top-container">
+                <button onClick={toggleCompletedFilter}>
+                    {showCompleted ? "Show All" : "Show Completed"}
+                </button>
+    
+                <div className="input-container">
+                    <TodoForm addToDo={addToDo} />
+                </div>
+            </div>
+    
+            <div className="TodoList">
+                {filteredTasks.map((todo) => (
+                    todo.isEditing ? (
+                        <EditTodoForm key={todo.id} editToDo={editTask} task={todo} />
+                    ) : (
+                        <div className="TodoItem" key={todo.id}>
+                            <Todo 
+                                task={todo} 
+                                toggleComplete={toggleComplete} 
+                                deleteToDo={deleteToDo} 
+                                editToDo={editToDo} 
+                            />
+                        </div>
+                    )
+                ))}
+            </div>
         </div>
-    )
-}
+    );      
+};
