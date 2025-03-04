@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Landing } from "./Landing";
-import { Profile } from "./Profile";
-import { TodoWrapper } from "./TodoWrapper";
-import { NavBar } from "./NavBar"; // Import NavBar
+import { Landing } from "./components/Landing";
+import { Profile } from "./components/Profile";
+import { TodoWrapper } from "./components/TodoWrapper";
+import { NavBar } from "./components/Navbar"; // ✅ Import the NavBar
+import "./App.css";
+
 
 function App() {
   return (
     <Router>
-      <NavBar /> {/* Add the navigation bar */}
+      <NavBar /> {/* ✅ Now it should work */}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/profile" element={<Profile />} />
