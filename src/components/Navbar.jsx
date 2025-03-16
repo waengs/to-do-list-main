@@ -1,7 +1,30 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../firebase";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-export const NavBar = () => {
+const NavBar = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      alert("Logged out successfully!");
+    } catch (error) {
+      alert("Error logging out: " + error.message);
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary p-3 shadow">
       <div className="container">
@@ -30,12 +53,23 @@ export const NavBar = () => {
             <li className="nav-item">
               <Link to="/todo" className="nav-link">To-Do List</Link>
             </li>
-            <li className="nav-item">
-              <Link to="/profile" className="nav-link">Profile</Link>
-            </li>
+            {user && (
+              <>
+                <li className="nav-item">
+                  <Link to="/profile" className="nav-link">Profile</Link>
+                </li>
+                <li className="nav-item">
+                  <button className="btn btn-danger ms-3" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
     </nav>
   );
 };
+
+export default NavBar;
